@@ -17,8 +17,8 @@ function asyncHandler(cb){
 
 // Route that returns a list of users.
 router.get('/users', authenticateUser, asyncHandler(async(req, res) => {
-    const users = await User.findAll();
-    res.json(users);
+    await User.findAll();
+    res.status(200).json();
 }));
 
 
@@ -26,7 +26,7 @@ router.get('/users', authenticateUser, asyncHandler(async(req, res) => {
 router.post('/users', asyncHandler(async (req, res) => {
     try {
         await User.create(req.body);
-        res.status(201).json({ "message": "Course successfully created!" });
+        res.status(201).location('/').end();
       } catch (error) {
         if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
           const errors = error.errors.map(err => err.message);

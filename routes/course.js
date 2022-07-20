@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Course = require('../models').Course;
+const User = require('../models').User;
 const { authenticateUser } = require('../middleware/auth-user');
 
 /* Handler function to wrap each route. */
@@ -17,13 +18,27 @@ function asyncHandler(cb){
 
 // Route that returns a list of courses.
 router.get('/courses', asyncHandler( async(req, res) => {
-    const courses = await Course.findAll();
+    const courses = await Course.findAll({
+        include: [
+            {
+              model: User,
+              as: 'user',
+            },
+          ],
+    });
     res.status(200).json(courses);
 }));
 
 // GET request by id /courses/:id 
 router.get('/courses/:id', asyncHandler(async (req, res) => {
-    const course = await Course.findByPk(req.params.id)
+    const course = await Course.findByPk(req.params.id, {
+        include: [
+            {
+              model: User,
+              as: 'user',
+            },
+          ],
+    })
     if(course) {
         res.status(200).json(course);
     } else {
@@ -35,7 +50,7 @@ router.get('/courses/:id', asyncHandler(async (req, res) => {
 router.post('/courses', authenticateUser, asyncHandler( async (req, res) => {
     try {
         await Course.create(req.body);
-        res.status(201).json({ "message": "Course successfully created!" });
+        res.status(201).end();
       } catch (error) {
         if (error.name === 'SequelizeValidationError') {
           const errors = error.errors.map(err => err.message);

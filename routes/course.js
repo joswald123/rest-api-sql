@@ -16,7 +16,7 @@ function asyncHandler(cb){
     }
   }
 
-// Route that returns a list of courses.
+// Route that returns a list of courses with the userId model for each course
 router.get('/courses', asyncHandler( async(req, res) => {
     const courses = await Course.findAll({
         include: [
@@ -24,12 +24,12 @@ router.get('/courses', asyncHandler( async(req, res) => {
               model: User,
               as: 'user',
             },
-          ],
+        ],
     });
     res.status(200).json(courses);
 }));
 
-// GET request by id /courses/:id 
+// GET request by id /courses/:id with the userId model
 router.get('/courses/:id', asyncHandler(async (req, res) => {
     const course = await Course.findByPk(req.params.id, {
         include: [
@@ -37,7 +37,7 @@ router.get('/courses/:id', asyncHandler(async (req, res) => {
               model: User,
               as: 'user',
             },
-          ],
+        ],
     })
     if(course) {
         res.status(200).json(course);
@@ -50,7 +50,7 @@ router.get('/courses/:id', asyncHandler(async (req, res) => {
 router.post('/courses', authenticateUser, asyncHandler( async (req, res) => {
     try {
         await Course.create(req.body);
-        res.status(201).end();
+        res.status(201).location('/').end();
       } catch (error) {
         if (error.name === 'SequelizeValidationError') {
           const errors = error.errors.map(err => err.message);

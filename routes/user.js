@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models').User;
-const { authenticateUser} = require('../middleware/auth-user');
+const { authenticateUser, currentUser } = require('../middleware/auth-user');
 
 /* Handler function to wrap each route. */
 function asyncHandler(cb){
@@ -28,7 +28,7 @@ router.get('/users', authenticateUser, asyncHandler(async(req, res) => {
 router.post('/users', asyncHandler(async (req, res) => {
     try {
         const user = await User.create(req.body);
-        res.status(201).location('/courses/' + req.params.id ).end();
+        res.status(201).location('/').json(user).end();
       } catch (error) {
         if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
           const errors = error.errors.map(err => err.message);

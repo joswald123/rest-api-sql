@@ -29,8 +29,7 @@ exports.authenticateUser = async (req, res, next) => {
             console.log(`Authentication successful for user: ${user.emailAddress}`);
             // Store the user on the Request object.
             req.currentUser = user;
-            // Displaying current user
-            res.json(user);
+            
             } else {
                 message = `Authentication failure for user: ${user.emailAddress}`;
             }
